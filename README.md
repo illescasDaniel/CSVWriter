@@ -14,8 +14,8 @@ Main features:
 
   * ```swift
     CSVWriter(separator: ";", columns: historyKeys, useDefaultNumberFormatter: true)
-    		.addNumbersRow(historyValues, withTitle: "Fitness")
-    		.save(to: URL(fileURLWithPath: "\(directoryRoot)/4/Output/SimulatedAnnealing-3.csv"))
+      .addNumbersRow(historyValues, withTitle: "Fitness")
+      .save(to: URL(fileURLWithPath: "\(directoryRoot)/4/Output/SimulatedAnnealing-3.csv"))
     ```
 
     
