@@ -46,7 +46,11 @@ class CSVWriter {
 		self.columns = columns
 		self.numberFormatter = useDefaultNumberFormatter ? NumberFormatter(decimalSeparator: ",", numberStyle: .decimal) : nil
 		
-		self.addRow(columns)
+		if useDefaultNumberFormatter {
+			self.addRow(columns)
+		} else {
+			self.addRawRow(columns)
+		}
 	}
 	
 	init(separator: String, columns: [String], useDefaultNumberFormatter: Bool = false) {
@@ -55,7 +59,11 @@ class CSVWriter {
 		self.columns = columns
 		self.numberFormatter = useDefaultNumberFormatter ? NumberFormatter(decimalSeparator: ",", numberStyle: .decimal) : nil
 		
-		self.addRow(columns)
+		if useDefaultNumberFormatter {
+			self.addRow(columns)
+		} else {
+			self.addRawRow(columns)
+		}
 	}
 	
 	init(separator: String, columns: String..., numberFormatter: NumberFormatter) {
@@ -67,12 +75,11 @@ class CSVWriter {
 		self.addRow(columns)
 	}
 	
-	@discardableResult func addNumbersRow(withValues columnValues: Any..., withTitle title: String = "") -> CSVWriter {
-		self.addNumbersRow(withValues: columnValues, withTitle: title)
-		return self
+	@discardableResult func addRow(withValues columnValues: Any..., withTitle title: String = "") -> CSVWriter {
+		return self.addRow(columnValues, withTitle: title)
 	}
 	
-	@discardableResult func addNumbersRow(_ columnValues: [Any], withTitle title: String = "") -> CSVWriter {
+	@discardableResult func addRow(_ columnValues: [Any], withTitle title: String = "") -> CSVWriter {
 		
 		let stringColumnValues: [String] = columnValues.map { value in
 			if let numberFormatter = numberFormatter, let number = value as? NSNumber, let validString = numberFormatter.string(from: number) {
@@ -81,8 +88,11 @@ class CSVWriter {
 			return String(describing: value)
 		}
 		
-		self.addRow([title] + stringColumnValues)
-		return self
+		return !title.isEmpty ? self.addRow([title] + stringColumnValues) : self.addRow(stringColumnValues)
+	}
+	
+	static func +=(lhs: CSVWriter, rhs: [Any]) {
+		lhs.addRow(rhs)
 	}
 	
 	@discardableResult func addRow(_ columnValues: [String]) -> CSVWriter {
@@ -125,12 +135,12 @@ extension CSVWriter {
 		self.init(separator: separator, columns: columns.map { String(describing: $0) }, useDefaultNumberFormatter: useDefaultNumberFormatter)
 	}
 	
-	@discardableResult func addRow(withValues columnValues: Any...) -> CSVWriter {
+	@discardableResult func addRawRow(withValues columnValues: Any...) -> CSVWriter {
 		self.addRow(withValues: columnValues)
 		return self
 	}
 	
-	@discardableResult func addRow(_ columnValues: [Any]) -> CSVWriter {
+	@discardableResult func addRawRow(_ columnValues: [Any]) -> CSVWriter {
 		self.addRow(columnValues.map { String(describing: $0) })
 		return self
 	}
