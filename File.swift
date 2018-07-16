@@ -39,6 +39,11 @@ struct File {
 		return true
 	}
 	
+	@discardableResult static func append(_ newContent: String, to path: URL?) -> Bool {
+		let previousContent = File.read(from: path) ?? ""
+		return File.save(previousContent + newContent, to: path)
+	}
+		
 	static func read(from filePath: URL?) -> String? {
 		
 		var content = String()
